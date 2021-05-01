@@ -8,10 +8,14 @@
 Various utilities the chainers and analyzers use.
 """
 
+import string
+
 from bisect import bisect
+from typing import Dict, Callable, List, Sequence
+from random import Random
 
 
-def merge_dict(into, outof, mergefunction = lambda x, y: x + y):
+def merge_dict(into: Dict, outof: Dict, mergefunction: Callable = lambda x, y: x + y) -> Dict:
     """
     Given two dictionries of dictionaries, merge them together by applying the mergefunction to the
     values of the second level dictionary.
@@ -37,7 +41,7 @@ def merge_dict(into, outof, mergefunction = lambda x, y: x + y):
     return into
 
 
-def convert_counts(ind):
+def convert_counts(ind: Dict) -> Dict:
     """
     Convert counts produced by analyzers into the statistics counts used by chainers.
 
@@ -54,7 +58,7 @@ def convert_counts(ind):
     return out
 
 
-def merge_stats(into, outof):
+def merge_stats(into: Dict, outof: Dict) -> Dict:
     """
     Perform a merge_dict in a way safe for the statistics dictionaries used by chainers.
 
@@ -74,7 +78,7 @@ def merge_stats(into, outof):
     return merge_dict(into, outof, stats_merge_function)
 
 
-def weighted_choice(random_state, values, weights):
+def weighted_choice(random_state: Random, values: Sequence, weights: Sequence):
     """
     Choose a random value in a weighted manner.
 
@@ -86,8 +90,8 @@ def weighted_choice(random_state, values, weights):
     Returns:
         The selected value
     """
-    total = 0
-    cum_weights = []
+    total: float = 0
+    cum_weights: List[float] = []
     for w in weights:
         total += w
         cum_weights.append(total)
@@ -96,7 +100,7 @@ def weighted_choice(random_state, values, weights):
     return values[i]
 
 
-def weighted_stat_choice(random_state, stats):
+def weighted_stat_choice(random_state: Random, stats: Dict):
     """
     Perform a weighted choice on a stat dictionary as used in chainers.
 
@@ -107,3 +111,19 @@ def weighted_stat_choice(random_state, stats):
     values = tuple(stats.keys())
     weights = tuple(stats[x][1] for x in values)
     return weighted_choice(random_state, values, weights)
+
+
+def make_word(seq: Sequence[str]):
+    return "".join(seq)
+
+
+def make_sent(seq: Sequence[str]) -> str:
+    output = ""
+
+    for item in seq:
+        if item in string.punctuation:
+            output += item
+        else:
+            output += (" " + item) if output else (item)
+
+    return output

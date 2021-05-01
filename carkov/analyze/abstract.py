@@ -1,3 +1,9 @@
+#
+# carkov markov chain library
+# © Copyright 2021 by Aldercone Studio <aldercone@gmail.com>
+# This is free software, see the included LICENSE for terms and conditions.
+#
+
 from abc import ABC, abstractmethod
 from collections import deque, defaultdict
 
@@ -9,7 +15,7 @@ This module defines the base class for analyzers which do basic statistical anal
 """
 
 
-class AbstractAnalyzer:
+class AbstractAnalyzer(ABC):
     def __init__(self, order, filters=None):
         """
         Initialize the analyzer.
@@ -24,7 +30,6 @@ class AbstractAnalyzer:
         self.filters = filters
         self.tokens = {}
         self.chain_counts = {}
-
 
     def analyze(self, corpus):
         """
@@ -70,7 +75,6 @@ class AbstractAnalyzer:
         Returns:
            (array of abstract): An array of segments that this class is prepared to process.
         """
-        ...
 
     def analyze_segment(self, segment):
         """

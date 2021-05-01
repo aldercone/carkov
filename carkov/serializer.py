@@ -7,39 +7,42 @@
 """
 Use msgpack to serialize a chainer to disk and then reread it from a serialized file.
 """
-from . import version
-from .abstracts import Abstract, TERMINAL, NUMBER
-from .chain import Chain
 
-
+from typing import Any, BinaryIO, Dict, Tuple, cast
 
 import msgpack
 
+from . import version
+from .abstracts import NUMBER, TERMINAL, Abstract
+from .chain import Chain
 
-def _unserialize_encode_helper(obj):
+
+def _unserialize_encode_helper(obj: Dict) -> Any:
     """
     This is a helper function which handles Abstract objects for serialization.
     """
     if '$$####$$' in obj:
+        val: Abstract
         if obj['n'] == 'TERMINAL':
-            obj = TERMINAL
+            val = TERMINAL
         elif obj['n'] == 'NUMBER':
-            obj = NUMBER
+            val = NUMBER
         else:
-            obj = Abstract(obj['n'])
+            val = Abstract(obj['n'])
+        return val
     return obj
 
 
-def _serialize_encode_helper(obj):
+def _serialize_encode_helper(obj: Any) -> Any:
     """
     This is a helper function which handles Abstract objects for serialization.
     """
     if isinstance(obj, Abstract):
-        obj = {'$$####$$': True, 'n': obj.name}
+        obj = {'$$####$$': True, 'n': cast(Abstract, obj).name}
     return obj
 
 
-def load_chainer(infile):
+def load_chainer(infile: BinaryIO) -> Chain:
     """
     Unserialize a chainer from an open IO stream
 
@@ -54,11 +57,11 @@ def load_chainer(infile):
         import warnings
         warnings.warn(f"Version mismatch while loading chain expect: [{version}] got: [{serialdict['version']}]")
     chain = Chain(serialdict['order'], serialdict['analyzer_class'])
-    chain.data = dict([(tuple(x), y) for x, y in serialdict['data']])
+    chain.data = {cast(Tuple[Any], tuple(x)): y for x, y in serialdict['data']}
     return chain
 
 
-def dump_chainer(chain: Chain, outfile):
+def dump_chainer(chain: Chain, outfile: BinaryIO):
     """
     Serialize a chainer to an open IO stream
 
@@ -66,7 +69,7 @@ def dump_chainer(chain: Chain, outfile):
         chain: A Chain object
         outfile: An open IO stream in binary mode that will be writen to
     """
-    serialdict = {}
+    serialdict: Dict[str, Any] = {}
     serialdict['version'] = version
     serialdict['order'] = chain.order
     serialdict['analyzer_class'] = chain.analyzer_class

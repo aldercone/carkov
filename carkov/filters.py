@@ -8,23 +8,28 @@
 Various filter functions that may be useful for processing certain kinds of corpora.
 """
 
-from unidecode import unidecode
+from typing import Optional
+
+# from unidecode import unidecode # fixme asciifying filter
 
 
 # All of these filters operate on string tokens
 
-def str_abstractize_numbers(token):
+def str_abstractize_numbers(token: str) -> Optional[str]:
     """Replace all numbers with a Number abstract."""
-    pass
+    return None
 
-def str_abstractize_roman(token):
+
+def str_abstractize_roman(token: str) -> Optional[str]:
     """Replace roman numerals with a Number abstract."""
-    pass
+    return None
 
-def str_strip_punct(token):
+
+def str_strip_punct(token: str) -> Optional[str]:
     """Remove any punctuation characters."""
-    pass
+    return None
 
-def str_asciify(token):
+
+def str_asciify(token: str) -> Optional[str]:
     """Convert all characters to an ascii approximation."""
-    pass
+    return None

@@ -11,12 +11,17 @@ and provides convenience functions for walking the chain.
 
 
 from collections import UserDict, deque
+from typing import Any, Dict, Tuple, Optional
 
 from .abstracts import TERMINAL
+from .analyze.abstract import AbstractAnalyzer
 from .utils import merge_stats, convert_counts, weighted_stat_choice
 
 
-def from_analyzer(analyzer):
+ChainType = Dict[Tuple[Any], Any]
+
+
+def from_analyzer(analyzer: AbstractAnalyzer):
     """
     Static initializer: Return a chainer with parameters and contents based on an analyzer instance.
     """
@@ -26,7 +31,7 @@ def from_analyzer(analyzer):
 
 
 class Chain(UserDict):
-    def __init__(self, order, analyzer_class=None):
+    def __init__(self, order: int, analyzer_class: Optional[str] = None):
         """
         Initialize Chain class
 
@@ -34,11 +39,11 @@ class Chain(UserDict):
             order: The window size of this chainer.
         """
         self.order = order
-        self.data = {}
+        self.data: ChainType = {}
         self.start_token = (None, ) * self.order
         self.analyzer_class = analyzer_class
 
-    def integrate(self, counts):
+    def integrate(self, counts: ChainType):
         """
         Accept a counts dictionary and merge it with local data and recalculate statistical relationships between
         outcomes. The counts must be from an analyzer of the same order.
@@ -116,7 +121,7 @@ class Chain(UserDict):
         Returns:
            A token
         """
-        if not parent_token in self.data:
+        if parent_token not in self.data:
             return None
         if weighted:
             return weighted_stat_choice(random_generator, self.data[parent_token])
